@@ -70,22 +70,22 @@ The return value must be an OS label string, for example:
 The source dataset is:
 
 ```text
-volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv
+volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv
 ```
 
 This file is Parquet despite the `.csv` suffix. Convert it into real CSV files
 before scoring:
 
 ```text
-volumes/storage/flowradar-challenge/data/os_train_data.csv
-volumes/storage/flowradar-challenge/data/os_test_data.csv
+volumes/storage/flowprint-challenge/data/os_train_data.csv
+volumes/storage/flowprint-challenge/data/os_test_data.csv
 ```
 
 Set:
 
 ```sh
-FLR_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"
-FLR_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"
+FLP_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"
+FLP_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"
 ```
 
 ## Scoring

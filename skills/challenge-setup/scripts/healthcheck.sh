@@ -12,7 +12,7 @@ if [[ -f "${ENV_FILE}" ]]; then
   set +a
 fi
 
-PORT="${FLR_API_PORT:-10001}"
+PORT="${FLP_API_PORT:-10001}"
 BASE_URL="http://localhost:${PORT}"
 
 echo "Checking ${BASE_URL}/ping"

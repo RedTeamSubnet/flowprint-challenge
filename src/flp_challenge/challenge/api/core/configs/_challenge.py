@@ -13,8 +13,8 @@ from pydantic_settings import SettingsConfigDict
 from api.core.constants import ENV_PREFIX
 from ._base import BaseConfig
 
-_API_DIR_ENV = "FLR_API_DIR"
-_DEFAULT_API_DIR = "/app/flowradar-challenge"
+_API_DIR_ENV = "FLP_API_DIR"
+_DEFAULT_API_DIR = "/app/flowprint-challenge"
 
 
 class ChallengeStatusEnum(str, Enum):
@@ -30,12 +30,12 @@ class FrameworkImageConfig(BaseModel):
 
 class FingerpinterContainerConfig(BaseModel):
     network_name: str = Field(default="internal_net")
-    image: str = Field(default="redteamsubnet61/flr_collector:latest")
+    image: str = Field(default="redteamsubnet61/flp_collector:latest")
     build_path: str = Field(
-        default="{api_dir}/flowradar",
+        default="{api_dir}/flowprint",
         description=(
-            "Path to the flowradar build context. "
-            "Use {api_dir} as a placeholder to expand against FLR_API_DIR."
+            "Path to the flowprint build context. "
+            "Use {api_dir} as a placeholder to expand against FLP_API_DIR."
         ),
     )
 
@@ -82,10 +82,10 @@ class ChallengeConfig(BaseConfig):
     api_key: SecretStr = Field(..., min_length=8, max_length=128)
     single_request_timeout: float = Field(default=2, ge=0)
     acceptable_miss_count: int = Field(default=10, ge=0)
-    flowradar_ip: str = Field(
+    flowprint_ip: str = Field(
         "127.0.0.1", strip_whitespace=True, min_length=7, max_length=15
     )
-    flowradar_port: int = Field(default=8000, ge=1, le=65535)
+    flowprint_port: int = Field(default=8000, ge=1, le=65535)
     test_csv_path: str = Field(
         "{data_dir}/v2_test_data.csv",
         strip_whitespace=True,
@@ -122,7 +122,7 @@ class ChallengeConfig(BaseConfig):
     @model_validator(mode="after")
     def _check_all(self) -> Self:
         DATA_DIR = os.getenv(
-            f"{ENV_PREFIX}API_DATA_DIR", "/var/lib/flowradar-challenge"
+            f"{ENV_PREFIX}API_DATA_DIR", "/var/lib/flowprint-challenge"
         )
         if not os.path.isdir(DATA_DIR):
             os.makedirs(DATA_DIR, exist_ok=True)

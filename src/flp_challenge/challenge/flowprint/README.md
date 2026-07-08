@@ -5,14 +5,14 @@ Passive operating-system classification API using network flow features.
 ## Overview
 
 This project provides the isolated detector and training container used by the
-FlowRadar scoring API. Miners submit one training script and one inference
+FlowPrint scoring API. Miners submit one training script and one inference
 script. Training runs inside this container against a generated CSV split from
-the 350k FlowRadar OS dataset.
+the 350k FlowPrint OS dataset.
 
 The source dataset is stored at:
 
 ```text
-volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv
+volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv
 ```
 
 The file has a `.csv` suffix but is Parquet. Convert it to real train/test CSV
@@ -53,7 +53,7 @@ def detect_os(features: dict, model: dict) -> str:
 The returned string must be one of the supported OS labels, such as `Android`,
 `iOS`, `Windows`, `Linux`, `Chromium OS`, or `Mac OS`.
 
-The challenge enforces `FLR_CHALLENGE_TRAINING_TIMEOUT_SECONDS`, defaulting to
+The challenge enforces `FLP_CHALLENGE_TRAINING_TIMEOUT_SECONDS`, defaulting to
 `600` seconds. The generated model JSON remains temporary inside this container
 for the current scoring run.
 

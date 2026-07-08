@@ -30,7 +30,7 @@ The final score is macro F1 across the OS classes.
 
 The source dataset is:
 
-- `volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv`
+- `volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv`
 
 Despite the `.csv` suffix, this file is Parquet. Convert it into real CSV
 train/test files before running the platform scorer. The target column is
@@ -38,27 +38,27 @@ train/test files before running the platform scorer. The target column is
 
 Recommended generated paths:
 
-- training: `volumes/storage/flowradar-challenge/data/os_train_data.csv`
-- scoring: `volumes/storage/flowradar-challenge/data/os_test_data.csv`
+- training: `volumes/storage/flowprint-challenge/data/os_train_data.csv`
+- scoring: `volumes/storage/flowprint-challenge/data/os_test_data.csv`
 
 Environment variables:
 
-- `FLR_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"`
-- `FLR_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"`
+- `FLP_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"`
+- `FLP_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"`
 
 ## Implementation Files
 
 Miner submission logic:
 
-- `src/flr_challenge/challenge/flowradar/src/train.py`
-- `src/flr_challenge/challenge/flowradar/src/submissions.py`
+- `src/flp_challenge/challenge/flowprint/src/train.py`
+- `src/flp_challenge/challenge/flowprint/src/submissions.py`
 
 Runtime and scoring:
 
-- `src/flr_challenge/challenge/flowradar/src/app.py`
-- `src/flr_challenge/challenge/api/endpoints/challenge/service.py`
-- `src/flr_challenge/challenge/api/endpoints/challenge/_utils.py`
-- `src/flr_challenge/challenge/api/endpoints/challenge/payload_managers.py`
+- `src/flp_challenge/challenge/flowprint/src/app.py`
+- `src/flp_challenge/challenge/api/endpoints/challenge/service.py`
+- `src/flp_challenge/challenge/api/endpoints/challenge/_utils.py`
+- `src/flp_challenge/challenge/api/endpoints/challenge/payload_managers.py`
 
 Keep changes scoped to the relevant ownership boundary. Do not move submission
 logic to files that are not included in the miner payload.
@@ -66,7 +66,7 @@ logic to files that are not included in the miner payload.
 ## Execution Flow
 
 1. `/score` receives `commit_files` containing `train.py` and `submissions.py`.
-2. The challenge starts an isolated FlowRadar container.
+2. The challenge starts an isolated FlowPrint container.
 3. Both scripts and the generated OS training CSV are mounted read-only.
 4. The challenge calls the container's `POST /train`.
 5. The container runs `train.py` and loads its temporary model JSON.
@@ -90,10 +90,10 @@ Miner code must never execute in the challenge API process.
 
 ## Constraints
 
-- Training must finish within `FLR_CHALLENGE_TRAINING_TIMEOUT_SECONDS`.
-- Model JSON must remain below `FLR_CHALLENGE_MODEL_JSON_SIZE_LIMIT`.
+- Training must finish within `FLP_CHALLENGE_TRAINING_TIMEOUT_SECONDS`.
+- Model JSON must remain below `FLP_CHALLENGE_MODEL_JSON_SIZE_LIMIT`.
 - Both scripts must respect the configured submission line limit.
-- Request misses above `FLR_CHALLENGE_ACCEPTABLE_MISS_COUNT` stop replay early.
+- Request misses above `FLP_CHALLENGE_ACCEPTABLE_MISS_COUNT` stop replay early.
 - Inference must return a real OS label string.
 - Do not embed pretrained, serialized, encoded, or hard-coded learned weights
   in `train.py` or `submissions.py`.
@@ -117,14 +117,14 @@ Miner code must never execute in the challenge API process.
 
 ```sh
 python3 -m py_compile \
-  src/flr_challenge/challenge/flowradar/src/train.py \
-  src/flr_challenge/challenge/flowradar/src/submissions.py \
-  src/flr_challenge/challenge/flowradar/src/app.py \
-  src/flr_challenge/challenge/api/endpoints/challenge/payload_managers.py
+  src/flp_challenge/challenge/flowprint/src/train.py \
+  src/flp_challenge/challenge/flowprint/src/submissions.py \
+  src/flp_challenge/challenge/flowprint/src/app.py \
+  src/flp_challenge/challenge/api/endpoints/challenge/payload_managers.py
 
 ruff --config volumes/configs/.ruff.toml --check \
-  src/flr_challenge/challenge/flowradar/src/train.py \
-  src/flr_challenge/challenge/flowradar/src/submissions.py
+  src/flp_challenge/challenge/flowprint/src/train.py \
+  src/flp_challenge/challenge/flowprint/src/submissions.py
 ```
 
 Production-equivalent validation must keep:

@@ -47,31 +47,31 @@ jobs:
       # - name: Build and export
       #   uses: docker/build-push-action@v6
       #   with:
-      #     context: ./src/flr_challenge/challenge
+      #     context: ./src/flp_challenge/challenge
       #     secrets: |
       #       "HASH_PASSWORD=${{ secrets.DOCKER_UID_HASH_PASSWORD }}"
       #     load: true
-      #     cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:cache-latest
-      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:test
+      #     cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:cache-latest
+      #     tags: ${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:test
       # - name: Test docker image
       #   run: |
-      #     docker run --rm -dt -p 10001:10001 ${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:test
+      #     docker run --rm -dt -p 10001:10001 ${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:test
       #     sleep 3
       #     curl -s http://localhost:10001/ping | grep "Pong"
       - name: Build and push
         uses: docker/build-push-action@v6
         with:
-          context: ./src/flr_challenge/challenge
+          context: ./src/flp_challenge/challenge
           secrets: |
             "HASH_PASSWORD=${{ secrets.DOCKER_UID_HASH_PASSWORD }}"
           platforms: linux/amd64
           # platforms: linux/amd64,linux/arm64
-          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:cache-latest
-          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:cache-latest,mode=max
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:cache-latest
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:cache-latest,mode=max
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:latest
-            ${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:${{ env._VERSION }}
-            ${{ secrets.DOCKERHUB_USERNAME }}/flowradar-challenge:${{ env._VERSION }}-${{ env._DATE }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:latest
+            ${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:${{ env._VERSION }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/flowprint-challenge:${{ env._VERSION }}-${{ env._DATE }}
           push: true
       - name: Trigger release
         env:

@@ -18,17 +18,17 @@ python3 skills/challenge-score/scripts/check_score.py
 
 What it does:
 
-1. Loads `FLR_CHALLENGE_API_KEY` from root `.env` (if present).
-2. Reads training and inference files from `src/flr_challenge/challenge/flowradar/src/train.py` and `submissions.py`.
+1. Loads `FLP_CHALLENGE_API_KEY` from root `.env` (if present).
+2. Reads training and inference files from `src/flp_challenge/challenge/flowprint/src/train.py` and `submissions.py`.
 3. Sends `POST http://localhost:10001/score` with `X-API-Key` header.
 4. Prints score output (macro F1 expected from `0` to `1`).
 
 # Important Files
 
 - `skills/challenge-score/scripts/check_score.py` - local scoring helper script.
-- `src/flr_challenge/challenge/api/endpoints/challenge/schemas.py` - `MinerOutput` and score telemetry schema.
-- `src/flr_challenge/challenge/api/endpoints/challenge/router.py` - challenge endpoint definitions.
-- `src/flr_challenge/challenge/flowradar/src/submissions.py` - current solver submission.
+- `src/flp_challenge/challenge/api/endpoints/challenge/schemas.py` - `MinerOutput` and score telemetry schema.
+- `src/flp_challenge/challenge/api/endpoints/challenge/router.py` - challenge endpoint definitions.
+- `src/flp_challenge/challenge/flowprint/src/submissions.py` - current solver submission.
 
 # Scoring System
 
@@ -74,8 +74,8 @@ Expected `/score` behavior:
 
 Do:
 
-- keep training logic in `src/flr_challenge/challenge/flowradar/src/train.py`.
-- keep inference logic in `src/flr_challenge/challenge/flowradar/src/submissions.py`.
+- keep training logic in `src/flp_challenge/challenge/flowprint/src/train.py`.
+- keep inference logic in `src/flp_challenge/challenge/flowprint/src/submissions.py`.
 - read the training CSV from `sys.argv[1]` and write JSON to `sys.argv[2]`.
 - train only from the generated OS training CSV derived from the 350k source dataset.
 - generate all learned weights during the current scoring run.
@@ -106,9 +106,9 @@ Don't:
 # Verification Steps
 
 1. Ensure API server is running on `localhost:10001`.
-2. Ensure root `.env` has `FLR_CHALLENGE_API_KEY`.
-3. Ensure `FLR_CHALLENGE_TRAIN_CSV_PATH` points to `os_train_data.csv`.
-4. Ensure `FLR_CHALLENGE_TEST_CSV_PATH` points to `os_test_data.csv`.
+2. Ensure root `.env` has `FLP_CHALLENGE_API_KEY`.
+3. Ensure `FLP_CHALLENGE_TRAIN_CSV_PATH` points to `os_train_data.csv`.
+4. Ensure `FLP_CHALLENGE_TEST_CSV_PATH` points to `os_test_data.csv`.
 5. Convert `flow_data_sampled_350k.csv` from Parquet if the OS CSV files are missing.
 6. Run script and confirm numeric output between `0` and `1`.
 7. Optional: inspect `GET /telemetry` and `GET /results` for deeper validation.
@@ -123,9 +123,9 @@ Don't:
 - Fingerprint serialization error:
     - ensure inference handles missing features and JSON `null`.
 - Auth failure:
-    - confirm `FLR_CHALLENGE_API_KEY` value in root `.env`.
+    - confirm `FLP_CHALLENGE_API_KEY` value in root `.env`.
 - Validation error:
-    - compare payload to `MinerOutput` in `src/flr_challenge/challenge/api/endpoints/challenge/schemas.py`.
+    - compare payload to `MinerOutput` in `src/flp_challenge/challenge/api/endpoints/challenge/schemas.py`.
 - Connection error:
     - verify local API is reachable at `http://localhost:10001`.
 - Need detailed scoring breakdown:
@@ -133,7 +133,7 @@ Don't:
 
 # Related Endpoints
 
-From `src/flr_challenge/challenge/api/endpoints/challenge/router.py`:
+From `src/flp_challenge/challenge/api/endpoints/challenge/router.py`:
 
 - `GET /task` - returns current miner input (randomized string).
 - `POST /score` - scores submission payload.

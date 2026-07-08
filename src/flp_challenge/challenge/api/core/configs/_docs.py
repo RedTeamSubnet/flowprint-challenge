@@ -19,7 +19,7 @@ class DocsConfig(BaseConfig):
         default="{api_prefix}/docs/oauth2-redirect"
     )
     summary: str | None = Field(
-        default="This is a RedTeam Subnet's flowradar: vpn detection repository."
+        default="This is a RedTeam Subnet's flowprint: vpn detection repository."
     )
     description: str = Field(default="", max_length=8192)
     terms_of_service: str | None = Field(default="https://theredteam.io/terms")

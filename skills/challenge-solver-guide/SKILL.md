@@ -5,7 +5,7 @@ description: Use for designing and implementing high-score OS classification sub
 
 # Purpose
 
-Guide agents to solve the FlowRadar challenge with robust passive OS
+Guide agents to solve the FlowPrint challenge with robust passive OS
 fingerprinting logic.
 
 Primary objective:
@@ -19,8 +19,8 @@ Primary objective:
    - `./skills/challenge-setup/scripts/setup.sh`
    - `./skills/challenge-setup/scripts/healthcheck.sh`
 3. Implement the two submission scripts:
-   - `src/flr_challenge/challenge/flowradar/src/train.py`
-   - `src/flr_challenge/challenge/flowradar/src/submissions.py`
+   - `src/flp_challenge/challenge/flowprint/src/train.py`
+   - `src/flp_challenge/challenge/flowprint/src/submissions.py`
 4. Score after each meaningful iteration:
    - `python3 skills/challenge-score/scripts/check_score.py`
 5. Inspect diagnostics:
@@ -34,11 +34,11 @@ See full map in:
 
 Core challenge data/input locations:
 
-- source dataset: `volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv`
-- recommended training CSV: `volumes/storage/flowradar-challenge/data/os_train_data.csv`
-- recommended scoring CSV: `volumes/storage/flowradar-challenge/data/os_test_data.csv`
-- trainer: `src/flr_challenge/challenge/flowradar/src/train.py`
-- inference: `src/flr_challenge/challenge/flowradar/src/submissions.py`
+- source dataset: `volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv`
+- recommended training CSV: `volumes/storage/flowprint-challenge/data/os_train_data.csv`
+- recommended scoring CSV: `volumes/storage/flowprint-challenge/data/os_test_data.csv`
+- trainer: `src/flp_challenge/challenge/flowprint/src/train.py`
+- inference: `src/flp_challenge/challenge/flowprint/src/submissions.py`
 
 The source dataset has a `.csv` suffix but is Parquet. The generated train/test
 files must be real CSV files because the platform trainer and scorer read CSV.
@@ -49,7 +49,7 @@ High-level pipeline:
 
 1. Challenge API `/score` receives both files through
    `miner_output.commit_files`.
-2. API starts an isolated FlowRadar container with both scripts and the OS
+2. API starts an isolated FlowPrint container with both scripts and the OS
    training CSV mounted read-only.
 3. `POST /train` runs `train.py` and loads its temporary JSON model.
 4. OS test rows are replayed through `/os_detector`.
@@ -71,7 +71,7 @@ Current scoring logic (`payload_managers.py`):
 
 Hard failure behavior:
 
-- if misses exceed `FLR_CHALLENGE_ACCEPTABLE_MISS_COUNT`, scoring stops early.
+- if misses exceed `FLP_CHALLENGE_ACCEPTABLE_MISS_COUNT`, scoring stops early.
 - excessive misses/timeouts reduce the number of scored rows and usually hurt
   macro F1.
 
@@ -157,5 +157,5 @@ See:
 # Expected Success States
 
 - the macro F1 is consistently non-zero and trending upward across iterations.
-- misses stay below `FLR_CHALLENGE_ACCEPTABLE_MISS_COUNT`.
+- misses stay below `FLP_CHALLENGE_ACCEPTABLE_MISS_COUNT`.
 - inference handles feature noise without frequent invalid predictions.

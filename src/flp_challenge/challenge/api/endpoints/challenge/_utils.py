@@ -28,9 +28,9 @@ def ensure_network_exists() -> None:
 
 
 def wait_for_health(
-    ip_address: str, timeout: int = 100, flowradar_port: int = 8000
+    ip_address: str, timeout: int = 100, flowprint_port: int = 8000
 ) -> None:
-    url = f"http://{ip_address}:{flowradar_port}/health"
+    url = f"http://{ip_address}:{flowprint_port}/health"
     start = time.time()
     while time.time() - start < timeout:
         try:
@@ -59,12 +59,12 @@ def _ensure_image(client: docker.DockerClient) -> None:
             )
 
 
-def run_flowradar_container(
+def run_flowprint_container(
     request_id: str,
     file_path: str,
     training_path: str,
     training_csv_path: str,
-    flowradar_port: int = 8000,
+    flowprint_port: int = 8000,
 ) -> tuple[docker.models.containers.Container, str]:
     if not os.path.isfile(training_csv_path):
         raise FileNotFoundError(f"Training CSV not found: {training_csv_path}")
@@ -73,7 +73,7 @@ def run_flowradar_container(
     ensure_network_exists()
     _ensure_image(client)
 
-    container_name = f"flowradar_{request_id}"
+    container_name = f"flowprint_{request_id}"
 
     volumes = {}
 
@@ -81,15 +81,15 @@ def run_flowradar_container(
     volumes[training_path] = {"bind": "/app/train.py", "mode": "ro"}
     volumes[training_csv_path] = {"bind": "/data/training.csv", "mode": "ro"}
     environment = {
-        "PORT": str(flowradar_port),
+        "PORT": str(flowprint_port),
         "PYTHONDONTWRITEBYTECODE": "1",
-        "FLOWRADAR_TRAINING_PATH": "/app/train.py",
-        "FLOWRADAR_TRAINING_CSV_PATH": "/data/training.csv",
-        "FLOWRADAR_MODEL_PATH": "/tmp/model.json",  # nosec
-        "FLOWRADAR_TRAINING_TIMEOUT_SECONDS": str(
+        "FLOWPRINT_TRAINING_PATH": "/app/train.py",
+        "FLOWPRINT_TRAINING_CSV_PATH": "/data/training.csv",
+        "FLOWPRINT_MODEL_PATH": "/tmp/model.json",  # nosec
+        "FLOWPRINT_TRAINING_TIMEOUT_SECONDS": str(
             config.challenge.training_timeout_seconds
         ),
-        "FLOWRADAR_MODEL_JSON_SIZE_LIMIT": str(config.challenge.model_json_size_limit),
+        "FLOWPRINT_MODEL_JSON_SIZE_LIMIT": str(config.challenge.model_json_size_limit),
     }
 
     container = client.containers.run(
@@ -161,7 +161,7 @@ def get_container_network_stats(
 __all__ = [
     "ensure_network_exists",
     "wait_for_health",
-    "run_flowradar_container",
+    "run_flowprint_container",
     "cleanup_container",
     "stream_container_logs",
     "start_log_streaming_thread",

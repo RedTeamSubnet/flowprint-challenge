@@ -26,11 +26,11 @@ fi
 
 ## --- Variables --- ##
 # Load from environment variables:
-API_VERSION_FILE_PATH="${API_VERSION_FILE_PATH:-./src/flr_challenge/challenge/api/__version__.py}"
-MODULE_VERSION_FILE_PATH="${MODULE_VERSION_FILE_PATH:-./src/flr_challenge/__version__.py}"
+API_VERSION_FILE_PATH="${API_VERSION_FILE_PATH:-./src/flp_challenge/challenge/api/__version__.py}"
+MODULE_VERSION_FILE_PATH="${MODULE_VERSION_FILE_PATH:-./src/flp_challenge/__version__.py}"
 COMPOSE_FILE_PATH="${COMPOSE_FILE_PATH:-./compose.yml}"
 SERVICE_NAME="${SERVICE_NAME:-challenge-api}"
-IMG_NAME="${IMG_NAME:-redteamsubnet61/flowradar-challenge}"
+IMG_NAME="${IMG_NAME:-redteamsubnet61/flowprint-challenge}"
 
 # Flags:
 _IS_ADD=false

@@ -8,9 +8,9 @@ from potato_util.generator import gen_random_string
 from api.config import config
 from api.logger import logger
 
-api_dir = os.environ.get("FLR_API_DIR", "/app/flowradar-challenge")
-_submission_path = Path(os.path.join(api_dir, "flowradar", "src", "submissions.py"))
-_training_path = Path(os.path.join(api_dir, "flowradar", "src", "train.py"))
+api_dir = os.environ.get("FLP_API_DIR", "/app/flowprint-challenge")
+_submission_path = Path(os.path.join(api_dir, "flowprint", "src", "submissions.py"))
+_training_path = Path(os.path.join(api_dir, "flowprint", "src", "train.py"))
 _submission_py = ""
 _training_py = ""
 try:

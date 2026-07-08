@@ -6,7 +6,7 @@ from redteam_core.challenge_pool.controller import ComparisonLog, Controller
 from redteam_core.validator.models import MinerChallengeCommit
 
 
-class FLRController(Controller):
+class FLPController(Controller):
 
     def __init__(
         self,
@@ -41,7 +41,7 @@ class FLRController(Controller):
             or _higest_comparison_score == 0.0
         ):
             bt.logging.info(
-                f"[CONTROLLER - FLRController] Skipping scoring for miner {miner_commit.miner_hotkey} on task "
+                f"[CONTROLLER - FLPController] Skipping scoring for miner {miner_commit.miner_hotkey} on task "
                 f"due to high comparison score: {_higest_comparison_score}"
             )
             _scoring_log.score = 0.0
@@ -150,5 +150,5 @@ class FLRController(Controller):
 
 
 __all__ = [
-    "FLRController",
+    "FLPController",
 ]

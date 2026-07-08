@@ -28,5 +28,5 @@ fi
 docker build \
 	--progress plain \
 	--platform linux/amd64 \
-	-t myhub/rest-flr-commit:latest \
+	-t myhub/rest-flp-commit:latest \
 	.

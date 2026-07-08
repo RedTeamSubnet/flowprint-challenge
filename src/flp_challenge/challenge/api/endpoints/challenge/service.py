@@ -72,24 +72,24 @@ def score(request_id: str, miner_output: MinerOutput) -> float:
                 f"[{request_id}] - Starting model training with timeout "
                 f"{config.challenge.training_timeout_seconds}s"
             )
-            container, ip_address = _utils.run_flowradar_container(
+            container, ip_address = _utils.run_flowprint_container(
                 request_id=request_id,
                 file_path=submission_path,
                 training_path=training_path,
                 training_csv_path=config.challenge.train_csv_path,
-                flowradar_port=config.challenge.flowradar_port,
+                flowprint_port=config.challenge.flowprint_port,
             )
             _utils.start_log_streaming_thread(container)
 
-            config.challenge.flowradar_ip = ip_address
+            config.challenge.flowprint_ip = ip_address
             logger.info(f"[{request_id}] - Detector container started at {ip_address}")
 
             _utils.wait_for_health(
-                ip_address, flowradar_port=config.challenge.flowradar_port
+                ip_address, flowprint_port=config.challenge.flowprint_port
             )
             logger.info(f"[{request_id}] - Detector container is healthy")
 
-            base_url = f"http://{ip_address}:{config.challenge.flowradar_port}"
+            base_url = f"http://{ip_address}:{config.challenge.flowprint_port}"
             training_response = requests.post(  # nosec
                 f"{base_url}/train",
                 timeout=config.challenge.training_timeout_seconds + 10,

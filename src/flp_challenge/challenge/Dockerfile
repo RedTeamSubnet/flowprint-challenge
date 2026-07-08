@@ -5,20 +5,20 @@ ARG PYTHON_VERSION=3.10
 ARG BASE_IMAGE=python:${PYTHON_VERSION}-slim-trixie
 
 ARG DEBIAN_FRONTEND=noninteractive
-ARG FLR_API_SLUG="flowradar-challenge"
+ARG FLP_API_SLUG="flowprint-challenge"
 
 
 ## Here is the builder image:
 FROM ${BASE_IMAGE} AS builder
 
 ARG DEBIAN_FRONTEND
-ARG FLR_API_SLUG
+ARG FLP_API_SLUG
 
 ENV	UV_LINK_MODE=copy
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
-WORKDIR "/usr/src/${FLR_API_SLUG}"
+WORKDIR "/usr/src/${FLP_API_SLUG}"
 
 RUN --mount=type=cache,target=/root/.cache,sharing=locked \
 	_BUILD_TARGET_ARCH=$(uname -m) && \
@@ -36,33 +36,33 @@ RUN	--mount=type=cache,target=/root/.cache,sharing=locked \
 FROM ${BASE_IMAGE} AS base
 
 ARG DEBIAN_FRONTEND
-ARG FLR_API_SLUG
+ARG FLP_API_SLUG
 
 ARG DOCKER_VERSION="28.5.2"
-ARG FLR_HOME_DIR="/app"
-ARG FLR_API_DIR="${FLR_HOME_DIR}/${FLR_API_SLUG}"
-ARG FLR_API_CONFIGS_DIR="/etc/${FLR_API_SLUG}"
-ARG FLR_API_DATA_DIR="/var/lib/${FLR_API_SLUG}"
-ARG FLR_API_LOGS_DIR="/var/log/${FLR_API_SLUG}"
-ARG FLR_API_TMP_DIR="/tmp/${FLR_API_SLUG}"
-ARG FLR_API_PORT=10001
-ARG FLR_API_DOCS_ENABLED=true
-## echo "FLR_USER_PASSWORD123" | openssl passwd -6 -stdin
+ARG FLP_HOME_DIR="/app"
+ARG FLP_API_DIR="${FLP_HOME_DIR}/${FLP_API_SLUG}"
+ARG FLP_API_CONFIGS_DIR="/etc/${FLP_API_SLUG}"
+ARG FLP_API_DATA_DIR="/var/lib/${FLP_API_SLUG}"
+ARG FLP_API_LOGS_DIR="/var/log/${FLP_API_SLUG}"
+ARG FLP_API_TMP_DIR="/tmp/${FLP_API_SLUG}"
+ARG FLP_API_PORT=10001
+ARG FLP_API_DOCS_ENABLED=true
+## echo "FLP_USER_PASSWORD123" | openssl passwd -6 -stdin
 ARG HASH_PASSWORD="\$6\$Ex9TNhjjLMtBMG.j\$X4psLehOPZ2Q0GOnzqjShmzcUg4SvjNV663a6wBQA78/sk5JjDzDPOurHBjPCTem2IwM4lbO/c1jkUJYMouOu/"
 ARG UID=1000
 ARG GID=11000
-ARG USER=flr-user
-ARG GROUP=flr-group
+ARG USER=flp-user
+ARG GROUP=flp-group
 
-ENV FLR_API_SLUG="${FLR_API_SLUG}" \
-	FLR_HOME_DIR="${FLR_HOME_DIR}" \
-	FLR_API_DIR="${FLR_API_DIR}" \
-	FLR_API_CONFIGS_DIR="${FLR_API_CONFIGS_DIR}" \
-	FLR_API_DATA_DIR="${FLR_API_DATA_DIR}" \
-	FLR_API_LOGS_DIR="${FLR_API_LOGS_DIR}" \
-	FLR_API_TMP_DIR="${FLR_API_TMP_DIR}" \
-	FLR_API_PORT=${FLR_API_PORT} \
-	FLR_API_DOCS_ENABLED=${FLR_API_DOCS_ENABLED} \
+ENV FLP_API_SLUG="${FLP_API_SLUG}" \
+	FLP_HOME_DIR="${FLP_HOME_DIR}" \
+	FLP_API_DIR="${FLP_API_DIR}" \
+	FLP_API_CONFIGS_DIR="${FLP_API_CONFIGS_DIR}" \
+	FLP_API_DATA_DIR="${FLP_API_DATA_DIR}" \
+	FLP_API_LOGS_DIR="${FLP_API_LOGS_DIR}" \
+	FLP_API_TMP_DIR="${FLP_API_TMP_DIR}" \
+	FLP_API_PORT=${FLP_API_PORT} \
+	FLP_API_DOCS_ENABLED=${FLP_API_DOCS_ENABLED} \
 	UID=${UID} \
 	GID=${GID} \
 	USER=${USER} \
@@ -115,21 +115,21 @@ RUN --mount=type=secret,id=HASH_PASSWORD \
 	echo "alias ls='ls -aF --group-directories-first --color=auto'" >> "/home/${USER}/.bashrc" && \
 	echo -e "alias ll='ls -alhF --group-directories-first --color=auto'\n" >> "/home/${USER}/.bashrc" && \
 	rm -rfv /var/lib/apt/lists/* /var/cache/apt/archives/* /tmp/* /root/.cache/* "/home/${USER}/.cache/*" && \
-	mkdir -pv "${FLR_API_DIR}" \
-		"${FLR_API_CONFIGS_DIR}" \
-		"${FLR_API_DATA_DIR}" \
-		"${FLR_API_LOGS_DIR}" \
-		"${FLR_API_TMP_DIR}" && \
+	mkdir -pv "${FLP_API_DIR}" \
+		"${FLP_API_CONFIGS_DIR}" \
+		"${FLP_API_DATA_DIR}" \
+		"${FLP_API_LOGS_DIR}" \
+		"${FLP_API_TMP_DIR}" && \
 	chown -Rc "${USER}:${GROUP}" \
-		"${FLR_HOME_DIR}" \
-		"${FLR_API_CONFIGS_DIR}" \
-		"${FLR_API_DATA_DIR}" \
-		"${FLR_API_LOGS_DIR}" \
-		"${FLR_API_TMP_DIR}" && \
-	find "${FLR_API_DIR}" "${FLR_API_CONFIGS_DIR}" "${FLR_API_DATA_DIR}" -type d -exec chmod -c 770 {} + && \
-	find "${FLR_API_DIR}" "${FLR_API_CONFIGS_DIR}" "${FLR_API_DATA_DIR}" -type d -exec chmod -c ug+s {} + && \
-	find "${FLR_API_LOGS_DIR}" "${FLR_API_TMP_DIR}" -type d -exec chmod -c 775 {} + && \
-	find "${FLR_API_LOGS_DIR}" "${FLR_API_TMP_DIR}" -type d -exec chmod -c +s {} +
+		"${FLP_HOME_DIR}" \
+		"${FLP_API_CONFIGS_DIR}" \
+		"${FLP_API_DATA_DIR}" \
+		"${FLP_API_LOGS_DIR}" \
+		"${FLP_API_TMP_DIR}" && \
+	find "${FLP_API_DIR}" "${FLP_API_CONFIGS_DIR}" "${FLP_API_DATA_DIR}" -type d -exec chmod -c 770 {} + && \
+	find "${FLP_API_DIR}" "${FLP_API_CONFIGS_DIR}" "${FLP_API_DATA_DIR}" -type d -exec chmod -c ug+s {} + && \
+	find "${FLP_API_LOGS_DIR}" "${FLP_API_TMP_DIR}" -type d -exec chmod -c 775 {} + && \
+	find "${FLP_API_LOGS_DIR}" "${FLP_API_TMP_DIR}" -type d -exec chmod -c +s {} +
 
 ENV LANG=en_US.UTF-8 \
 	LANGUAGE=en_US.UTF-8 \
@@ -141,16 +141,16 @@ COPY --from=builder --chown=${UID}:${GID} /install /usr/local
 ## Here is the final image:
 FROM base AS app
 
-WORKDIR "${FLR_API_DIR}"
-COPY --chown=${UID}:${GID} ./api ${FLR_API_DIR}/api
+WORKDIR "${FLP_API_DIR}"
+COPY --chown=${UID}:${GID} ./api ${FLP_API_DIR}/api
 COPY --chown=${UID}:${GID} --chmod=770 ./scripts/*.sh /usr/local/bin/
-COPY --chown=${UID}:${GID} ./flowradar ${FLR_API_DIR}/flowradar
-# VOLUME ["${FLR_API_DATA_DIR}"]
-# EXPOSE ${FLR_API_PORT}
+COPY --chown=${UID}:${GID} ./flowprint ${FLP_API_DIR}/flowprint
+# VOLUME ["${FLP_API_DATA_DIR}"]
+# EXPOSE ${FLP_API_PORT}
 
 # USER ${UID}:${GID}
 # HEALTHCHECK --start-period=30s --start-interval=1s --interval=5m --timeout=5s --retries=3 \
-# 	CMD curl -f http://localhost:${FLR_API_PORT}/ping || exit 1
+# 	CMD curl -f http://localhost:${FLP_API_PORT}/ping || exit 1
 
 ENTRYPOINT ["docker-entrypoint.sh"]
-# CMD ["-b", "uvicorn api.main:app --host=0.0.0.0 --port=${FLR_API_PORT:-10001} --no-access-log --no-server-header --proxy-headers --forwarded-allow-ips='*'"]
+# CMD ["-b", "uvicorn api.main:app --host=0.0.0.0 --port=${FLP_API_PORT:-10001} --no-access-log --no-server-header --proxy-headers --forwarded-allow-ips='*'"]

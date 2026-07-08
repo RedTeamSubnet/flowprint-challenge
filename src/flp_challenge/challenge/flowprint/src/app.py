@@ -28,7 +28,7 @@ _TRAINING_LOCK = threading.Lock()
 
 
 def _load_model() -> object:
-    model_path = os.getenv("FLOWRADAR_MODEL_PATH", "/tmp/model.json")  # nosec
+    model_path = os.getenv("FLOWPRINT_MODEL_PATH", "/tmp/model.json")  # nosec
     if not os.path.exists(model_path):
         logger.warning("Model JSON not found at %s; using empty model", model_path)
         return {}
@@ -48,12 +48,12 @@ def train() -> dict[str, int | str]:
     if not _TRAINING_LOCK.acquire(blocking=False):
         raise HTTPException(status_code=409, detail="Training is already in progress.")
 
-    training_path = os.getenv("FLOWRADAR_TRAINING_PATH", "/app/train.py")
-    training_csv_path = os.getenv("FLOWRADAR_TRAINING_CSV_PATH", "/data/training.csv")
-    model_path = os.getenv("FLOWRADAR_MODEL_PATH", "/tmp/model.json")  # nosec
-    timeout = float(os.getenv("FLOWRADAR_TRAINING_TIMEOUT_SECONDS", "600"))
+    training_path = os.getenv("FLOWPRINT_TRAINING_PATH", "/app/train.py")
+    training_csv_path = os.getenv("FLOWPRINT_TRAINING_CSV_PATH", "/data/training.csv")
+    model_path = os.getenv("FLOWPRINT_MODEL_PATH", "/tmp/model.json")  # nosec
+    timeout = float(os.getenv("FLOWPRINT_TRAINING_TIMEOUT_SECONDS", "600"))
     size_limit = int(
-        os.getenv("FLOWRADAR_MODEL_JSON_SIZE_LIMIT", str(20 * 1024 * 1024))
+        os.getenv("FLOWPRINT_MODEL_JSON_SIZE_LIMIT", str(20 * 1024 * 1024))
     )
 
     try:

@@ -28,4 +28,4 @@
 - do not rely only on the majority class; it weakens general OS prediction quality.
 - do not throw exceptions on malformed input; return a safe prediction path.
 - do not change production-parity scoring env values for final validation
-  (`FLR_CHALLENGE_ACCEPTABLE_MISS_COUNT`, `FLR_CHALLENGE_SINGLE_REQUEST_TIMEOUT`).
+  (`FLP_CHALLENGE_ACCEPTABLE_MISS_COUNT`, `FLP_CHALLENGE_SINGLE_REQUEST_TIMEOUT`).

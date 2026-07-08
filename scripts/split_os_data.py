@@ -4,7 +4,7 @@ import pandas as pd
 
 
 def main() -> None:
-    data_dir = Path("volumes/storage/flowradar-challenge/data")
+    data_dir = Path("volumes/storage/flowprint-challenge/data")
     source_path = data_dir / "flow_data_sampled_350k.csv"
     train_path = data_dir / "os_train_data.csv"
     test_path = data_dir / "os_test_data.csv"

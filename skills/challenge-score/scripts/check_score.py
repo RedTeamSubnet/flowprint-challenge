@@ -24,20 +24,20 @@ def main() -> int:
     root_dir = Path(__file__).resolve().parents[3]
     _load_env_file(root_dir / ".env")
 
-    api_key = os.environ.get("FLR_CHALLENGE_API_KEY")
+    api_key = os.environ.get("FLP_CHALLENGE_API_KEY")
     if not api_key:
-        print("FLR_CHALLENGE_API_KEY is not set", file=sys.stderr)
+        print("FLP_CHALLENGE_API_KEY is not set", file=sys.stderr)
         return 1
 
     train_csv = os.environ.get(
-        "FLR_CHALLENGE_TRAIN_CSV_PATH", "{data_dir}/os_train_data.csv"
+        "FLP_CHALLENGE_TRAIN_CSV_PATH", "{data_dir}/os_train_data.csv"
     )
     test_csv = os.environ.get(
-        "FLR_CHALLENGE_TEST_CSV_PATH", "{data_dir}/os_test_data.csv"
+        "FLP_CHALLENGE_TEST_CSV_PATH", "{data_dir}/os_test_data.csv"
     )
     if Path(train_csv).name != "os_train_data.csv":
         print(
-            "FLR_CHALLENGE_TRAIN_CSV_PATH must point to os_train_data.csv",
+            "FLP_CHALLENGE_TRAIN_CSV_PATH must point to os_train_data.csv",
             file=sys.stderr,
         )
         return 1
@@ -49,7 +49,7 @@ def main() -> int:
         )
 
     local_train_csv = (
-        root_dir / "volumes/storage/flowradar-challenge/data/os_train_data.csv"
+        root_dir / "volumes/storage/flowprint-challenge/data/os_train_data.csv"
     )
     if not local_train_csv.exists() or local_train_csv.stat().st_size < 1_000_000:
         print(
@@ -59,9 +59,9 @@ def main() -> int:
         )
         return 1
 
-    flowradar_src = root_dir / "src/flr_challenge/challenge/flowradar/src"
-    training_file = flowradar_src / "train.py"
-    submission_file = flowradar_src / "submissions.py"
+    flowprint_src = root_dir / "src/flp_challenge/challenge/flowprint/src"
+    training_file = flowprint_src / "train.py"
+    submission_file = flowprint_src / "submissions.py"
 
     if not training_file.exists():
         print(f"Missing training file: {training_file}", file=sys.stderr)
@@ -90,7 +90,7 @@ def main() -> int:
         },
     }
 
-    port = os.environ.get("FLR_API_PORT", "10001")
+    port = os.environ.get("FLP_API_PORT", "10001")
     req = request.Request(
         f"http://localhost:{port}/score",
         data=json.dumps(payload).encode("utf-8"),
@@ -103,7 +103,7 @@ def main() -> int:
 
     try:
         training_timeout = float(
-            os.environ.get("FLR_CHALLENGE_TRAINING_TIMEOUT_SECONDS", "600")
+            os.environ.get("FLP_CHALLENGE_TRAINING_TIMEOUT_SECONDS", "600")
         )
         with request.urlopen(req, timeout=training_timeout + 300) as resp:  # nosec
             raw = resp.read().decode("utf-8")

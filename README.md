@@ -1,6 +1,6 @@
 # OS Classification
 
-![FlowRadar v2 poster](docs/assets/images/poster.png)
+![FlowPrint v2 poster](docs/assets/images/poster.png)
 
 This is a RedTeam Subnet OS Classification challenge repository.
 
@@ -29,11 +29,11 @@ Miners submit two Python files:
     - Must write a valid JSON model file.
 2. `submissions.py`
     - Exposes `detect_os(features, model) -> str`.
-    - Runs inside the FlowRadar detector container.
+    - Runs inside the FlowPrint detector container.
     - Receives one row from the OS test CSV at a time and the JSON model produced by training.
 
 The challenge API reads both files from `miner_output.commit_files` and mounts
-them with the generated OS training CSV into the isolated FlowRadar container.
+them with the generated OS training CSV into the isolated FlowPrint container.
 The container trains the model, keeps the model temporary for that scoring run,
 and serves inference while the challenge replays the generated OS test CSV.
 
@@ -45,7 +45,7 @@ the generated OS training CSV during the current scoring run, and
 The source dataset is:
 
 ```text
-volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv
+volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv
 ```
 
 Despite the suffix, this file is Parquet. Convert it into real train/test CSV
@@ -69,7 +69,7 @@ based on per-class OS predictions.
 ### 1. 🚧 Prerequisites
 
 - Install [**docker** and **docker compose**](https://docs.docker.com/engine/install)
-    - Docker image: [**redteamsubnet61/flowradar-challenge**](https://hub.docker.com/r/redteamsubnet61/flowradar-challenge)
+    - Docker image: [**redteamsubnet61/flowprint-challenge**](https://hub.docker.com/r/redteamsubnet61/flowprint-challenge)
 
 [OPTIONAL] For **DEVELOPMENT** environment:
 
@@ -98,22 +98,22 @@ cd ~/workspaces/projects
 **OPTION A.** Clone the repository:
 
 ```sh
-git clone https://github.com/RedTeamSubnet/flowradar_v1.git && \
-    cd flowradar_v1 && \
+git clone https://github.com/RedTeamSubnet/flowprint_v1.git && \
+    cd flowprint_v1 && \
     git lfs pull
 ```
 
 **OPTION B.** Clone the repository (for **DEVELOPMENT**: git + ssh key):
 
 ```sh
-git clone git@github.com:RedTeamSubnet/flowradar_v1.git && \
-    cd flowradar_v1 && \
+git clone git@github.com:RedTeamSubnet/flowprint_v1.git && \
+    cd flowprint_v1 && \
     git lfs pull
 ```
 
 **OPTION C.** Download source code:
 
-1. Download archived **zip** or **tar.gz** file from [**releases**](https://github.com/RedTeamSubnet/flowradar_v1/releases).
+1. Download archived **zip** or **tar.gz** file from [**releases**](https://github.com/RedTeamSubnet/flowprint_v1/releases).
 2. Extract it into the projects directory.
 3. Enter into the project directory.
 
@@ -204,20 +204,20 @@ DEBUG=false
 
 
 ## -- API configs -- ##
-FLR_API_PORT=10001
-# FLR_API_CONFIGS_DIR="/etc/flowradar-challenge"
-# FLR_API_LOGS_DIR="/var/log/flowradar-challenge"
-# FLR_API_DATA_DIR="/var/lib/flowradar-challenge"
-# FLR_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"
-# FLR_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"
-# FLR_CHALLENGE_TRAINING_TIMEOUT_SECONDS=600
-# FLR_API_TMP_DIR="/tmp/flowradar-challenge"
-# FLR_API_VERSION="1"
-# FLR_API_PREFIX=""
-# FLR_API_DOCS_ENABLED=true
-# FLR_API_DOCS_OPENAPI_URL="{api_prefix}/openapi.json"
-# FLR_API_DOCS_DOCS_URL="{api_prefix}/docs"
-# FLR_API_DOCS_REDOC_URL="{api_prefix}/redoc"
+FLP_API_PORT=10001
+# FLP_API_CONFIGS_DIR="/etc/flowprint-challenge"
+# FLP_API_LOGS_DIR="/var/log/flowprint-challenge"
+# FLP_API_DATA_DIR="/var/lib/flowprint-challenge"
+# FLP_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"
+# FLP_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"
+# FLP_CHALLENGE_TRAINING_TIMEOUT_SECONDS=600
+# FLP_API_TMP_DIR="/tmp/flowprint-challenge"
+# FLP_API_VERSION="1"
+# FLP_API_PREFIX=""
+# FLP_API_DOCS_ENABLED=true
+# FLP_API_DOCS_OPENAPI_URL="{api_prefix}/openapi.json"
+# FLP_API_DOCS_DOCS_URL="{api_prefix}/docs"
+# FLP_API_DOCS_REDOC_URL="{api_prefix}/redoc"
 ```
 
 ---

@@ -1,6 +1,6 @@
-# Miner Commit - FlowRadar: VPN Detection
+# Miner Commit - FlowPrint: VPN Detection
 
-This is a miner commit API example for FlowRadar: VPN Detection.
+This is a miner commit API example for FlowPrint: VPN Detection.
 
 ## ✨ Features
 
@@ -79,7 +79,7 @@ current scoring run, and `submissions.py` must use only the generated `model`
 argument.
 
 Production always passes
-`volumes/storage/flowradar-challenge/data/v2_train_data.csv` to the trainer.
+`volumes/storage/flowprint-challenge/data/v2_train_data.csv` to the trainer.
 Miners cannot choose a different training dataset. The label column is
 `vpn_is_enabled`. Run `git lfs pull` if the dataset was not downloaded with the
 repository.
@@ -91,8 +91,8 @@ v1 test data to the v2 columns before scoring it.
 After finishing development, miners must check formatting for their submission files using Ruff:
 
 ```sh
-ruff --config volumes/configs/.ruff.toml --check src/flr_challenge/challenge/flowradar/src/submissions.py
-ruff --config volumes/configs/.ruff.toml --check src/flr_challenge/challenge/flowradar/src/train.py
+ruff --config volumes/configs/.ruff.toml --check src/flp_challenge/challenge/flowprint/src/submissions.py
+ruff --config volumes/configs/.ruff.toml --check src/flp_challenge/challenge/flowprint/src/train.py
 ```
 
 > [!CAUTION]
@@ -105,8 +105,8 @@ ruff --config volumes/configs/.ruff.toml --check src/flr_challenge/challenge/flo
 To build the docker image, run the following command:
 
 ```sh
-docker build -t myhub/rest-flr-commit:0.0.1 .
+docker build -t myhub/rest-flp-commit:0.0.1 .
 
 # For MacOS (Apple Silicon) to build AMD64:
-DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t myhub/rest-flr-commit:0.0.1 .
+DOCKER_BUILDKIT=1 docker build --platform linux/amd64 -t myhub/rest-flp-commit:0.0.1 .
 ```

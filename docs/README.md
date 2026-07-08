@@ -13,9 +13,9 @@ The platform now asks miners to:
 
 | Path | Purpose |
 | --- | --- |
-| `volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv` | Source OS dataset. Despite the suffix, this file is Parquet. |
-| `volumes/storage/flowradar-challenge/data/os_train_data.csv` | Recommended generated training CSV. |
-| `volumes/storage/flowradar-challenge/data/os_test_data.csv` | Recommended generated scoring CSV. |
+| `volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv` | Source OS dataset. Despite the suffix, this file is Parquet. |
+| `volumes/storage/flowprint-challenge/data/os_train_data.csv` | Recommended generated training CSV. |
+| `volumes/storage/flowprint-challenge/data/os_test_data.csv` | Recommended generated scoring CSV. |
 
 The label column is `device_os`. All other columns are inference features.
 
@@ -34,7 +34,7 @@ Submitted files:
 ## Runtime Flow
 
 1. `/score` receives `train.py` and `submissions.py`.
-2. The scorer starts an isolated FlowRadar detector container.
+2. The scorer starts an isolated FlowPrint detector container.
 3. The detector runs `POST /train`.
 4. The scorer replays the OS test CSV through `POST /os_detector`.
 5. The scorer compares returned `device_os` values against hidden labels.

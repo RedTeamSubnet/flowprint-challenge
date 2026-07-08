@@ -7,7 +7,7 @@ This guide covers local validation for the OS Classification challenge.
 The source dataset is:
 
 ```text
-volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv
+volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv
 ```
 
 Despite the `.csv` suffix, it is Parquet. Convert it into real CSV train/test
@@ -16,9 +16,9 @@ files before running the platform scorer:
 ```python
 import pandas as pd
 
-src = "volumes/storage/flowradar-challenge/data/flow_data_sampled_350k.csv"
-train_out = "volumes/storage/flowradar-challenge/data/os_train_data.csv"
-test_out = "volumes/storage/flowradar-challenge/data/os_test_data.csv"
+src = "volumes/storage/flowprint-challenge/data/flow_data_sampled_350k.csv"
+train_out = "volumes/storage/flowprint-challenge/data/os_train_data.csv"
+test_out = "volumes/storage/flowprint-challenge/data/os_test_data.csv"
 
 df = pd.read_parquet(src)
 df = df.sample(frac=1, random_state=42).reset_index(drop=True)
@@ -34,24 +34,24 @@ The label is `device_os`. Inference rows must not include `device_os`.
 
 ```sh
 python3 -m py_compile \
-  src/flr_challenge/challenge/flowradar/src/train.py \
-  src/flr_challenge/challenge/flowradar/src/submissions.py \
-  src/flr_challenge/challenge/flowradar/src/app.py \
-  src/flr_challenge/challenge/api/endpoints/challenge/payload_managers.py
+  src/flp_challenge/challenge/flowprint/src/train.py \
+  src/flp_challenge/challenge/flowprint/src/submissions.py \
+  src/flp_challenge/challenge/flowprint/src/app.py \
+  src/flp_challenge/challenge/api/endpoints/challenge/payload_managers.py
 ```
 
 ## Training Smoke Test
 
 ```sh
-python3 src/flr_challenge/challenge/flowradar/src/train.py \
-  volumes/storage/flowradar-challenge/data/os_train_data.csv \
-  /tmp/flowradar-os-model.json
+python3 src/flp_challenge/challenge/flowprint/src/train.py \
+  volumes/storage/flowprint-challenge/data/os_train_data.csv \
+  /tmp/flowprint-os-model.json
 ```
 
 Inspect the generated model:
 
 ```sh
-python3 -m json.tool /tmp/flowradar-os-model.json | head -80
+python3 -m json.tool /tmp/flowprint-os-model.json | head -80
 ```
 
 The model should include:
@@ -72,16 +72,16 @@ import csv
 import importlib.util
 import json
 
-model = json.load(open("/tmp/flowradar-os-model.json"))
+model = json.load(open("/tmp/flowprint-os-model.json"))
 
 spec = importlib.util.spec_from_file_location(
     "submissions",
-    "src/flr_challenge/challenge/flowradar/src/submissions.py",
+    "src/flp_challenge/challenge/flowprint/src/submissions.py",
 )
 mod = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(mod)
 
-with open("volumes/storage/flowradar-challenge/data/os_test_data.csv", newline="") as f:
+with open("volumes/storage/flowprint-challenge/data/os_test_data.csv", newline="") as f:
     row = next(csv.DictReader(f))
 
 row.pop("device_os", None)
@@ -92,12 +92,12 @@ Expected result: one OS label string.
 
 ## Full Platform Score
 
-Ensure the API server is running and the `.env` contains `FLR_CHALLENGE_API_KEY`.
+Ensure the API server is running and the `.env` contains `FLP_CHALLENGE_API_KEY`.
 Configure the OS CSV paths:
 
 ```sh
-export FLR_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"
-export FLR_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"
+export FLP_CHALLENGE_TRAIN_CSV_PATH="{data_dir}/os_train_data.csv"
+export FLP_CHALLENGE_TEST_CSV_PATH="{data_dir}/os_test_data.csv"
 ```
 
 Then run:

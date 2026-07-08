@@ -10,7 +10,7 @@ from redteam_core.validator.challenge_manager import ChallengeManager
 from redteam_core.validator.models import MinerChallengeInfo
 
 
-class FLRChallengeManager(ChallengeManager):
+class FLPChallengeManager(ChallengeManager):
 
     def __init__(self, challenge_info: dict, metagraph: bt.metagraph):
         super().__init__(challenge_info, metagraph)
@@ -102,7 +102,7 @@ class FLRChallengeManager(ChallengeManager):
 
             if miner_commit.accepted and miner_commit.encrypted_commit:
                 bt.logging.info(
-                    f"[CHALLENGE MANAGER - FLRChallengeManager] Adding miner commit `{miner_commit.miner_uid}` "
+                    f"[CHALLENGE MANAGER - FLPChallengeManager] Adding miner commit `{miner_commit.miner_uid}` "
                     "to unique commit set."
                 )
                 self._try_add_unique_commit(
@@ -258,5 +258,5 @@ class FLRChallengeManager(ChallengeManager):
 
 
 __all__ = [
-    "FLRChallengeManager",
+    "FLPChallengeManager",
 ]

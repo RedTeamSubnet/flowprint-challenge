@@ -1,7 +1,7 @@
-ENV_PREFIX = "FLR_"
+ENV_PREFIX = "FLP_"
 ENV_PREFIX_API = f"{ENV_PREFIX}API_"
 
-API_SLUG = "flowradar-challenge"
+API_SLUG = "flowprint-challenge"
 
 __all__ = [
     "ENV_PREFIX",
