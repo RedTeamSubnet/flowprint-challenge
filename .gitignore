@@ -538,3 +538,6 @@ volumes/configs/**/*._*
 tests/
 volumes/
 templates/configs/challenge/security.yml
+
+# Local-only docs (removed from git history, keep untracked)
+docs/DOCUMENTATION.md
