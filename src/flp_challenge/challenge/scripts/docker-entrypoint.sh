@@ -81,8 +81,8 @@ main()
 
 	find "${FLP_API_DATA_DIR}" -type d -exec chmod 771 {} + || exit 2
 	find "${FLP_API_DATA_DIR}" -type f \( \
-			-name "v2_train_data.csv" -o \
-			-name "v2_test_data.csv" \
+			-name "flow_data_train_150k.csv" -o \
+			-name "flow_data_test_200k.csv" \
 		\) -exec chmod 664 {} + || exit 2
 
 	find "${FLP_API_LOGS_DIR}" "${FLP_API_TMP_DIR}" -type d -exec chmod 775 {} + || exit 2
