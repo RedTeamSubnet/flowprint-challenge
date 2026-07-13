@@ -44,17 +44,17 @@ class ChallengeConfig(BaseConfig):
     )
     flowprint_port: int = Field(default=8000, ge=1, le=65535)
     test_csv_path: str = Field(
-        "{data_dir}/v2_test_data.csv",
+        "{data_dir}/v1_test_data.csv",
         strip_whitespace=True,
         min_length=2,
         max_length=256,
     )
     train_csv_path: str = Field(
-        "{data_dir}/v2_train_data.csv",
+        "{data_dir}/v1_train_data.csv",
         strip_whitespace=True,
         min_length=2,
         max_length=256,
-        description="Mandatory v2 CSV passed to the miner training script.",
+        description="Mandatory v1 CSV passed to the miner training script.",
     )
     training_timeout_seconds: float = Field(
         default=600,

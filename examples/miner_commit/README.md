@@ -88,11 +88,11 @@ The v1 datasets are only for optional compatibility testing. Keep training on
 v2, rename the v1 test label from `is_vpn` to `vpn_is_enabled`, and reindex the
 v1 test data to the v2 columns before scoring it.
 
-After finishing development, miners must check formatting for their submission files using Ruff:
+After finishing development, miners must check formatting for their submission files using Ruff. The validation pipeline runs:
 
 ```sh
-ruff --config volumes/configs/.ruff.toml --check src/flp_challenge/challenge/flowprint/src/submissions.py
-ruff --config volumes/configs/.ruff.toml --check src/flp_challenge/challenge/flowprint/src/train.py
+ruff check --config=.ruff.toml --output-format=json --no-fix src/commit/submissions.py
+ruff check --config=.ruff.toml --output-format=json --no-fix src/commit/train.py
 ```
 
 > [!CAUTION]
