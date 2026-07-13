@@ -1,5 +1,4 @@
 import os
-from enum import Enum
 from typing_extensions import Self
 
 from pydantic import (
@@ -17,18 +16,7 @@ _API_DIR_ENV = "FLP_API_DIR"
 _DEFAULT_API_DIR = "/app/flowprint-challenge"
 
 
-class ChallengeStatusEnum(str, Enum):
-    ACTIVE = "active"
-    RUNNING = "running"
-    COMPLETED = "completed"
-
-
-class FrameworkImageConfig(BaseModel):
-    name: str = Field(..., min_length=1, max_length=128)
-    image: str = Field(..., min_length=1, max_length=256)
-
-
-class FingerpinterContainerConfig(BaseModel):
+class FlowprintContainerConfig(BaseModel):
     network_name: str = Field(default="internal_net")
     image: str = Field(default="redteamsubnet61/flp_collector:latest")
     build_path: str = Field(
@@ -47,40 +35,9 @@ class FingerpinterContainerConfig(BaseModel):
         return self
 
 
-class ScoringConfig(BaseModel):
-    testcase_weights: dict[str, float] = Field(
-        default_factory=lambda: {
-            "vpnstealth": 10.0,
-            "audiohardwareshift": 8.0,
-            "deepmobilespoof": 7.0,
-            "incognito": 6.0,
-            "webgpuliar": 6.0,
-            "canvasspoofer": 5.0,
-            "fontsshielded": 5.0,
-            "dirtydom": 5.0,
-            "mediagranted": 5.0,
-            "crossbrowser": 3.0,
-        }
-    )
-    browser_weights: dict[str, float] = Field(
-        default_factory=lambda: {
-            "tor": 4.0,
-            "firefox": 3.0,
-            "yandex": 3.0,
-            "brave": 2.0,
-            "safari": 2.0,
-            "chrome": 1.0,
-        }
-    )
-    collision_penalty: float = Field(default=0.3, ge=0.0, le=1.0)
-    fragmentation_penalty: float = Field(default=0.2, ge=0.0, le=1.0)
-    max_collision_threshold: float = Field(default=0.1, ge=0.0, le=1.0)
-    max_fragmentation_threshold: float = Field(default=0.1, ge=0.0, le=1.0)
-
-
 class ChallengeConfig(BaseConfig):
     api_key: SecretStr = Field(..., min_length=8, max_length=128)
-    single_request_timeout: float = Field(default=2, ge=0)
+    single_request_timeout: float = Field(default=0.1, ge=0)
     acceptable_miss_count: int = Field(default=10, ge=0)
     flowprint_ip: str = Field(
         "127.0.0.1", strip_whitespace=True, min_length=7, max_length=15
@@ -113,10 +70,9 @@ class ChallengeConfig(BaseConfig):
         default=["initializer", "metrics_collector", "linker"], min_items=1
     )
     submission_length_limit: int = Field(default=1000, ge=1)
-    fp_container: FingerpinterContainerConfig = Field(
-        default_factory=FingerpinterContainerConfig
+    fp_container: FlowprintContainerConfig = Field(
+        default_factory=FlowprintContainerConfig
     )
-    scoring: ScoringConfig = Field(default_factory=ScoringConfig)
     model_config = SettingsConfigDict(env_prefix=f"{ENV_PREFIX}CHALLENGE_")
 
     @model_validator(mode="after")
@@ -155,8 +111,5 @@ class ChallengeConfig(BaseConfig):
 
 __all__ = [
     "ChallengeConfig",
-    "ChallengeStatusEnum",
-    "FrameworkImageConfig",
-    "FingerpinterContainerConfig",
-    "ScoringConfig",
+    "FlowprintContainerConfig",
 ]
