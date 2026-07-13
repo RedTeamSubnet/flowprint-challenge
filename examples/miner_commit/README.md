@@ -1,6 +1,6 @@
-# Miner Commit - FlowPrint: VPN Detection
+# Miner Commit - FlowPrint: OS Classification
 
-This is a miner commit API example for FlowPrint: VPN Detection.
+This is a miner commit API example for FlowPrint: OS Classification.
 
 ## ✨ Features
 
@@ -71,22 +71,19 @@ Miner output contains exactly two commit files:
 ```
 
 - `train.py` is called as `python train.py <training_csv> <model_json>`.
-- `submissions.py` exposes `detect_vpn(features, model)`.
+- `submissions.py` exposes `detect_os(features, model)`.
 
 Pretrained or hard-coded learned weights are prohibited in both files.
-`train.py` must generate the model from the provided v2 training CSV during the
+`train.py` must generate the model from the provided v1 training CSV during the
 current scoring run, and `submissions.py` must use only the generated `model`
 argument.
 
 Production always passes
-`volumes/storage/flowprint-challenge/data/v2_train_data.csv` to the trainer.
+`volumes/storage/flowprint-challenge/data/v1_train_data.csv` to the trainer.
 Miners cannot choose a different training dataset. The label column is
-`vpn_is_enabled`. Run `git lfs pull` if the dataset was not downloaded with the
+`device_os`. Run `git lfs pull` if the dataset was not downloaded with the
 repository.
 
-The v1 datasets are only for optional compatibility testing. Keep training on
-v2, rename the v1 test label from `is_vpn` to `vpn_is_enabled`, and reindex the
-v1 test data to the v2 columns before scoring it.
 
 After finishing development, miners must check formatting for their submission files using Ruff. The validation pipeline runs:
 
