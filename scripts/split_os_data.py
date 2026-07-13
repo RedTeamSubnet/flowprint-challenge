@@ -22,15 +22,9 @@ def main() -> None:
         test_parts.append(group.iloc[split_index:])
 
     train = (
-        pd.concat(train_parts)
-        .sample(frac=1, random_state=42)
-        .reset_index(drop=True)
+        pd.concat(train_parts).sample(frac=1, random_state=42).reset_index(drop=True)
     )
-    test = (
-        pd.concat(test_parts)
-        .sample(frac=1, random_state=42)
-        .reset_index(drop=True)
-    )
+    test = pd.concat(test_parts).sample(frac=1, random_state=42).reset_index(drop=True)
 
     train.to_csv(train_path, index=False)
     test.to_csv(test_path, index=False)

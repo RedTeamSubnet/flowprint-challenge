@@ -1,7 +1,7 @@
 ---
 title: "Release Notes"
 hide:
-  - navigation
+    - navigation
 ---
 
 # 📌 Release Notes
@@ -10,8 +10,4 @@ hide:
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
 
-
-
 **Full Changelog**: https://github.com/RedTeamSubnet/flowprint-challenge/commits/v1.0.0
-
-

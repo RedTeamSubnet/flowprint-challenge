@@ -10,7 +10,6 @@
 			"envFile": "${workspaceFolder}/.env",
 			"env": {
 				"FLOWPRINT_API_PORT": "10001",
-				"FLOWPRINT_CHALLENGE_API_KEY": "password12345",
 				"FLP_API_DATA_DIR": "${workspaceFolder}/volumes/storage/flowprint-challenge/data",
 				"FLP_API_LOGS_DIR": "${workspaceFolder}/volumes/storage/flowprint-challenge/logs",
 				"FLP_CHALLENGE_TEST_CSV_PATH": "{data_dir}/v2_test_data.csv",
