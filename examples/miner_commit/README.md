@@ -83,6 +83,10 @@ Production always passes
 Miners cannot choose a different training dataset. The label column is
 `device_os`. Run `git lfs pull` if the dataset was not downloaded with the
 repository.
+The test dataset is private to the official scoring server and is not provided
+to miners, including for local testing.
+Each `/os_detector` request must complete within 100 milliseconds. More than 10
+missed or timed-out requests stops scoring.
 
 
 After finishing development, miners must check formatting for their submission files using Ruff. The validation pipeline runs:

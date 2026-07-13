@@ -56,7 +56,7 @@ def get_feature_names(fieldnames):
 
 def _prune_table(table):
     pruned = {}
-    rare = {c: 0 for c in CLASSES}
+    rare = dict.fromkeys(CLASSES, 0)
     for value, class_counts in table.items():
         if sum(class_counts.values()) >= MIN_VALUE_COUNT:
             pruned[value] = class_counts
@@ -76,7 +76,7 @@ def main():
         reader = csv.DictReader(csv_file)
         feature_names = get_feature_names(reader.fieldnames)
         count = {feature: {} for feature in feature_names}
-        class_totals = {c: 0 for c in CLASSES}
+        class_totals = dict.fromkeys(CLASSES, 0)
 
         for row in reader:
             label = str(row.get(LABEL_COLUMN, "")).strip()
@@ -87,7 +87,7 @@ def main():
                 value = extract_value(row, feature)
                 table = count[feature]
                 if value not in table:
-                    table[value] = {c: 0 for c in CLASSES}
+                    table[value] = dict.fromkeys(CLASSES, 0)
                 table[value][label] += 1
 
     count = {feature: _prune_table(table) for feature, table in count.items()}
