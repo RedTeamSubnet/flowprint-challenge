@@ -6,6 +6,14 @@ hide:
 
 # 📌 Release Notes
 
+## v1.0.2 (2026-07-18)
+
+<!-- Release notes generated using configuration in .github/release.yml at main -->
+
+
+
+**Full Changelog**: https://github.com/RedTeamSubnet/flowprint-challenge/compare/1.0.1...v1.0.2
+
 ## v1.0.1 (2026-07-15)
 
 <!-- Release notes generated using configuration in .github/release.yml at main -->
