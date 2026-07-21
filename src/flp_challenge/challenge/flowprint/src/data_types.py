@@ -1,4 +1,4 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class OSDetectionInput(BaseModel):
@@ -22,7 +22,36 @@ class OSDetectionOutput(BaseModel):
     )
 
 
+class BatchOSDetectionInput(BaseModel):
+    products: list[dict] = Field(
+        ...,
+        title="Products",
+        description="Raw network flow feature rows from CSV.",
+    )
+    request_ids: list[str] = Field(
+        ...,
+        title="Request IDs",
+        description="Unique identifiers corresponding to each product row.",
+    )
+
+    @model_validator(mode="after")
+    def _validate_request_ids(self):
+        if len(self.products) != len(self.request_ids):
+            raise ValueError("products and request_ids must have the same length")
+        return self
+
+
+class BatchOSDetectionOutput(BaseModel):
+    results: list[OSDetectionOutput] = Field(
+        ...,
+        title="Results",
+        description="Detected operating systems keyed by request ID.",
+    )
+
+
 __all__ = [
+    "BatchOSDetectionInput",
+    "BatchOSDetectionOutput",
     "OSDetectionInput",
     "OSDetectionOutput",
 ]

@@ -1,7 +1,6 @@
 import os
 import tempfile
 import time
-from typing import Any
 
 import pandas as pd
 import requests
@@ -22,18 +21,6 @@ from .payload_managers import (
 
 def get_task() -> MinerInput:
     return MinerInput()
-
-
-def _json_safe_value(value: Any) -> Any:
-    """Convert pandas/numpy missing scalars to valid JSON values."""
-    try:
-        if pd.isna(value):
-            return None
-    except (TypeError, ValueError):
-        pass
-
-    item = getattr(value, "item", None)
-    return item() if callable(item) else value
 
 
 @validate_call
@@ -121,54 +108,162 @@ def score(request_id: str, miner_output: MinerOutput) -> float:
                 raise ValueError("Scoring CSV must contain 'device_os'")
             ground_truth = df.pop(label_column)
 
-            _request_session = requests.Session()
+            df = df.astype(object).where(pd.notna(df), None)
+            records = df.to_dict("records")
+            row_ids = [str(index) for index in df.index]
+            expected_os_by_row = [str(ground_truth.loc[index]) for index in df.index]
+            batch_size = config.challenge.batch_request_size
+            total_batches = (len(records) + batch_size - 1) // batch_size
+
             logger.info(
-                f"[{request_id}] - Starting fingerprinting process for {len(df)} rows"
+                f"[{request_id}] - Starting fingerprinting process for {len(records)} rows "
+                f"with batch size {batch_size}"
             )
-            for index, row in df.iterrows():
-                row_data = {
-                    column: _json_safe_value(value) for column, value in row.items()
-                }
-                expected_os = ground_truth.loc[index]
 
-                try:
+            with requests.Session() as request_session:
+                for batch_start in range(0, len(records), batch_size):
+                    batch_end = min(batch_start + batch_size, len(records))
+                    batch_number = (batch_start // batch_size) + 1
+                    batch_records = records[batch_start:batch_end]
+                    batch_row_ids = row_ids[batch_start:batch_end]
+                    batch_expected_os = expected_os_by_row[batch_start:batch_end]
+                    batch_request_ids = [
+                        f"{request_id}:{row_id}" for row_id in batch_row_ids
+                    ]
+                    expected_request_ids = set(batch_request_ids)
 
-                    resp = _request_session.post(
-                        f"{base_url}/os_detector",
-                        json={"products": row_data},
-                        timeout=config.challenge.single_request_timeout,
+                    logger.info(
+                        f"[{request_id}] - Scoring batch "
+                        f"{batch_number}/{total_batches} "
+                        f"rows {batch_start}:{batch_end} "
+                        f"({len(batch_records)} records)"
                     )
-                    resp.raise_for_status()
-                    result = resp.json()
-                    device_os = result.get("device_os")
 
-                    logger.debug(
-                        f"[{request_id}] - Row {index}: device_os={device_os}, expected={expected_os}"
-                    )
-
-                    if device_os is not None:
-                        payload_manager.store_payload(
-                            row_id=str(index),
-                            predicted_os=str(device_os),
-                            expected_os=str(expected_os),
-                            request_id=result.get("request_id"),
+                    try:
+                        resp = request_session.post(
+                            f"{base_url}/os_detector/batch",
+                            json={
+                                "products": batch_records,
+                                "request_ids": batch_request_ids,
+                            },
+                            timeout=config.challenge.batch_request_timeout,
                         )
-                    else:
-                        _request_miss_counter += 1
-                        logger.warning(
-                            f"[{request_id}] - No device_os returned for row {index}"
+                        resp.raise_for_status()
+                        batch_result = resp.json()
+                    except requests.RequestException as e:
+                        _request_miss_counter += len(batch_records)
+                        logger.error(
+                            f"[{request_id}] - Error during fingerprint batch "
+                            f"{batch_start}:{batch_end}: {str(e)}"
                         )
-                except requests.RequestException as e:
-                    _request_miss_counter += 1
-                    logger.error(
-                        f"[{request_id}] - Error during fingerprint request for row {index}: {str(e)}"
-                    )
-                if _request_miss_counter > config.challenge.acceptable_miss_count:
-                    logger.error(
-                        f"[{request_id}] - Exceeded max request misses. Stopping fingerprinting."
-                    )
-                    break
-            _request_session.close()
+                        if (
+                            _request_miss_counter
+                            > config.challenge.acceptable_miss_count
+                        ):
+                            logger.error(
+                                f"[{request_id}] - Exceeded max request misses. "
+                                "Stopping fingerprinting."
+                            )
+                            return 0.0
+                        continue
+
+                    results = batch_result.get("results")
+                    if not isinstance(results, list):
+                        _request_miss_counter += len(batch_records)
+                        logger.error(
+                            f"[{request_id}] - Invalid fingerprint batch response "
+                            f"for rows {batch_start}:{batch_end}"
+                        )
+                        if (
+                            _request_miss_counter
+                            > config.challenge.acceptable_miss_count
+                        ):
+                            logger.error(
+                                f"[{request_id}] - Exceeded max request misses. "
+                                "Stopping fingerprinting."
+                            )
+                            return 0.0
+                        continue
+
+                    results_by_request_id = {}
+                    duplicate_request_ids = set()
+                    for result in results:
+                        if not isinstance(result, dict):
+                            _request_miss_counter += 1
+                            continue
+
+                        result_request_id = result.get("request_id")
+                        if result_request_id not in expected_request_ids:
+                            _request_miss_counter += 1
+                            logger.warning(
+                                f"[{request_id}] - Ignoring unknown fingerprint "
+                                f"request_id={result_request_id}"
+                            )
+                            continue
+
+                        if result_request_id in results_by_request_id:
+                            duplicate_request_ids.add(result_request_id)
+                            logger.warning(
+                                f"[{request_id}] - Ignoring duplicate fingerprint "
+                                f"request_id={result_request_id}"
+                            )
+                            continue
+
+                        results_by_request_id[result_request_id] = result
+
+                    if (
+                        _request_miss_counter
+                        > config.challenge.acceptable_miss_count
+                    ):
+                        logger.error(
+                            f"[{request_id}] - Exceeded max request misses. "
+                            "Stopping fingerprinting."
+                        )
+                        return 0.0
+
+                    for row_id, expected_os, batch_request_id in zip(
+                        batch_row_ids,
+                        batch_expected_os,
+                        batch_request_ids,
+                        strict=True,
+                    ):
+                        result = results_by_request_id.get(batch_request_id)
+                        device_os = None if result is None else result.get("device_os")
+
+                        logger.debug(
+                            f"[{request_id}] - Row {row_id}: device_os={device_os}, "
+                            f"expected={expected_os}"
+                        )
+
+                        if result is None or batch_request_id in duplicate_request_ids:
+                            _request_miss_counter += 1
+                            logger.warning(
+                                f"[{request_id}] - Missing valid fingerprint result "
+                                f"for row {row_id}"
+                            )
+                        elif device_os is not None:
+                            payload_manager.store_payload(
+                                row_id=row_id,
+                                predicted_os=str(device_os),
+                                expected_os=expected_os,
+                                request_id=batch_request_id,
+                            )
+                        else:
+                            _request_miss_counter += 1
+                            logger.warning(
+                                f"[{request_id}] - No device_os returned for row {row_id}"
+                            )
+
+                        if (
+                            _request_miss_counter
+                            > config.challenge.acceptable_miss_count
+                        ):
+                            logger.error(
+                                f"[{request_id}] - Exceeded max request misses. "
+                                "Stopping fingerprinting."
+                            )
+                            return 0.0
+
             fingerprint_seconds = time.perf_counter() - runtime_start
             runtime_seconds = time.perf_counter() - total_runtime_start
 

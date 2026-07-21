@@ -10,7 +10,12 @@ from uuid import uuid4
 
 from fastapi import FastAPI, Body, HTTPException, Request
 
-from data_types import OSDetectionInput, OSDetectionOutput
+from data_types import (
+    BatchOSDetectionInput,
+    BatchOSDetectionOutput,
+    OSDetectionInput,
+    OSDetectionOutput,
+)
 from submissions import detect_os
 
 logger = logging.getLogger(__name__)
@@ -137,6 +142,35 @@ def fingerprint(
     except Exception as err:
         logger.error(f"Failed to process fingerprint: {str(err)}")
         raise HTTPException(status_code=500, detail="Failed to process fingerprint.")
+
+
+@app.post("/os_detector/batch", response_model=BatchOSDetectionOutput)
+def fingerprint_batch(
+    os_input: BatchOSDetectionInput = Body(...),
+) -> BatchOSDetectionOutput:
+    logger.info("Processing fingerprint batch with %s rows...", len(os_input.products))
+    try:
+        if _MODEL is None:
+            raise HTTPException(status_code=409, detail="Model has not been trained.")
+
+        results = [
+            OSDetectionOutput(
+                device_os=detect_os(products, _MODEL),
+                request_id=request_id,
+            )
+            for products, request_id in zip(
+                os_input.products, os_input.request_ids, strict=True
+            )
+        ]
+
+        return BatchOSDetectionOutput(results=results)
+    except HTTPException:
+        raise
+    except Exception as err:
+        logger.error(f"Failed to process fingerprint batch: {str(err)}")
+        raise HTTPException(
+            status_code=500, detail="Failed to process fingerprint batch."
+        )
 
 
 __all__ = ["app"]

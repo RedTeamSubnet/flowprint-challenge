@@ -38,6 +38,8 @@ class FlowprintContainerConfig(BaseModel):
 class ChallengeConfig(BaseConfig):
     api_key: SecretStr = Field(..., min_length=8, max_length=128)
     single_request_timeout: float = Field(default=0.1, ge=0)
+    batch_request_size: int = Field(default=5000, ge=1)
+    batch_request_timeout: float = Field(default=30.0, ge=0)
     acceptable_miss_count: int = Field(default=10, ge=0)
     flowprint_ip: str = Field(
         "127.0.0.1", strip_whitespace=True, min_length=7, max_length=15
